@@ -1,0 +1,170 @@
+
+class check_low_mass
+{
+private:
+	int is_write = 0;
+	int islow = 1;
+	int mass[20];
+	int raz;
+	int razvhod;
+public:
+
+	check_low_mass()
+	{
+
+	}
+
+	check_low_mass(int ms[20], int rz)
+	{
+		for (int i = 0; i < rz; i++)
+			mass[i] = ms[i];
+		raz = rz;
+	}
+
+
+	bool mass_is_low()
+	{
+		int kol_stolb = raz;
+		for (int i = 1; i < kol_stolb; i++)
+			if (mass[i - 1] >= mass[i])
+				;
+			else
+			{
+				islow = 0;
+				break;
+			}
+		if (islow) return true;
+		else
+		{
+			islow = 1;
+			return false;
+		}
+	}
+
+	check_low_mass operator <<(check_low_mass in);
+	
+	
+
+	void printmas()
+	{
+		if (is_write)
+		{
+			if (raz != 0 && razvhod != 0)
+			{
+				cout << "\nresult = ";
+				for (int i = 0; i < raz + razvhod; i++)
+					cout << mass[i] << " ";
+			}
+			else 
+				cout << "\nЕсть пустой массив!";
+		}
+		else
+			cout << "\nЕсть массив не по убыванию";
+	}
+
+};
+
+check_low_mass check_low_mass :: operator <<(check_low_mass in)
+{
+	check_low_mass rez;
+	rez.razvhod = in.raz;
+	rez.raz = raz;
+
+	if (mass_is_low())
+	{
+		if (in.mass_is_low())
+		{
+			int i = raz - 1, j = in.raz - 1, k = 0;
+			int iter = raz + in.raz;
+
+			while (iter)
+			{
+				if ((mass[i] <= in.mass[j] || j < 0) && i >= 0)
+				{
+					rez.mass[k] = mass[i];
+					i--;
+					k++;
+				}
+				else
+					if (j >= 0)
+					{
+						rez.mass[k] = in.mass[j];
+						j--;
+						k++;
+					}
+				iter--;
+			}
+			rez.is_write = 1;
+		}
+	}
+	return rez;
+}
+
+
+
+#include <iostream>
+
+using namespace std;
+
+#include "check_low_massiv.h"
+
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+
+	int mass[20][20], massinvert[20], kol_str, kol_stolb, kol_up = 0;
+	int zeromas[] = { 0 };
+	
+
+
+	cout << "Введите размерность массива" << endl;
+	cin >> kol_str >> kol_stolb;
+	cout << "Введите элементы матрицы" << endl;
+	for (int i = 0; i < kol_str; i++)
+		for (int j = 0; j < kol_stolb; j++)
+			cin >> mass[i][j];
+
+
+	for (int i = 0; i < kol_str; i++)
+	{
+		int j = 0;
+		int k = kol_stolb - 1;
+		while (k >= 0)
+		{
+			massinvert[j] = mass[i][k];
+			j++, k--;
+		}
+		j = 0;
+		check_low_mass rab(massinvert, kol_stolb);
+		if (rab.mass_is_low())
+			kol_up += 1;
+	}
+	cout << "\nСтрочек по возрастанию - " << kol_up << endl;
+
+	int mass1[20], mass2[20], kol1, kol2;
+
+	cout << "\nВведите кол-во элементов 1 массива" << endl;
+	cin >> kol1;
+	cout << "Введите элементы массива" << endl;
+	for (int i = 0; i < kol1; i++)
+		cin >> mass1[i];
+
+
+	cout << "\nВведите кол-во элементов 2 массива" << endl;
+	cin >> kol2;
+	cout << "Введите элементы массива" << endl;
+	for (int i = 0; i < kol2; i++)
+		cin >> mass2[i];
+
+	check_low_mass mas1(mass1, kol1), mas2(mass2, kol2), mas3;
+
+	mas3 = mas1 << mas2;
+
+	
+	mas3.printmas();
+	
+	cout << endl;
+
+	return 0;
+}
